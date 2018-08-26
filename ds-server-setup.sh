@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Welcome
+clear
 echo ""
 echo ""
 echo "                           W E L C O M E                    "
@@ -12,15 +13,23 @@ echo "Starting..."
 echo ""
 echo ""
 
-# Update and Upgrade
+# apt-fast
+# Use apt-fast instead of apt-get for a speedy update
+# apt-fast is a shell script wrapper for “apt-get” that improves updated and 
+# package download speed by downloading packages from multiple connections simultaneously.
+sudo add-apt-repository ppa:apt-fast/stable
 sudo apt-get update
-sudo apt-get -y upgrade
+sudo apt-get -y install apt-fast
+
+# Update and Upgrade
+sudo apt-fast update
+sudo apt-fast -y upgrade
 
 # Synchronize the System Clock
 # It is a good idea to synchronize the system clock with an NTP (network time protocol)
 # server over the Internet when you run a physical server.
 # In case you run a virtual server then you should skip this step.
-sudo apt-get -y install ntp
+sudo apt-fast -y install ntp
 
 # Lubuntu
 # Light Weight Desktop Environment:
@@ -28,30 +37,35 @@ sudo apt-get -y install ntp
 # It is a Linux system, that uses the minimal desktop LXDE, and a selection of light applications.
 # Because of this, Lubuntu has very low hardware requirements.
 # https://lubuntu.net/
-sudo apt-get -y install lubuntu-desktop
+sudo apt-fast -y install lubuntu-desktop
 
 # Build Essentials
-sudo apt-get -y install gdebi-core
-sudo apt-get -y install build-essential checkinstall
+sudo apt-fast -y install gdebi-core
+sudo apt-fast -y install build-essential checkinstall
+
+# Chromium
+# Chromium is the open source project behind Google Chrome.
+# https://www.chromium.org/
+sudo apt-fast install -y chromium-browser
 
 # Clamav
 # ClamAV® is an open source antivirus engine for detecting trojans, viruses, malware & other malicious threats.
 # Documentation: https://www.clamav.net/documents
 # https://www.clamav.net
-sudo apt-get -y install  clamav clamav-daemon clamav-freshclam clamtk
+sudo apt-fast -y install  clamav clamav-daemon clamav-freshclam clamtk
 sudo service clamav-daemon start
 
 # Install Media restrictive Codecs
 # In order to play media files like MP#, MPEG4, AVI etc, you’ll need to install media codecs.
 # Ubuntu has them in their repository but doesn’t install it by default because of copyright issues in various countries.
 # In order to install, you have to accept the Eula License.
-sudo apt-get -y install ubuntu-restricted-extras
+sudo apt-fast -y install ubuntu-restricted-extras
 
 # SSH Secure Shell
 # Cryptographic network protocol for operating network services securely over an unsecured network.
 # Manuals: https://www.openssh.com/manual.html
 # www.ssh.com
-sudo apt-get -y install ssh openssh-server
+sudo apt-fast -y install ssh openssh-server
 
 # Tmux
 # Terminal of choice for SSH connections.
@@ -59,62 +73,74 @@ sudo apt-get -y install ssh openssh-server
 # detach them (they keep running in the background) and reattach them to a different terminal. And do a lot more!
 # User Guide: https://robots.thoughtbot.com/a-tmux-crash-course
 # https://github.com/tmux/tmux/wiki
-sudo apt-get -y install tmux
+sudo apt-fast -y install tmux
 
 # Samba
 # A Samba file server enables file sharing across different operating systems over a network.
 # It lets you access your desktop files from a laptop and share files with Windows and macOS users.
 # Documentation: https://www.samba.org/samba/docs/
 # https://www.samba.org
-#sudo apt-get -y install samba
-#sudo apt-get -y install samba-common-bin
-#sudo apt-get -y install system-config-samba
+sudo apt-fast -y install tasksel
+sudo tasksel install samba-server
 
-# We can check if the installation was successful by running:
-#whereis samba
+# Fresh clean configuration file
+sudo cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
+sudo bash -c 'grep -v -E "^#|^;" /etc/samba/smb.conf_backup | grep . > /etc/samba/smb.conf'
+
+# Command to create a new Samba user: 
+sudo smbpasswd -a $USER
 
 # Add to Samba configuration file: /etc/samba/smb.conf
-#sudo tee -a /etc/samba/smb.conf <<< "[sambashare]"
-#sudo tee -a /etc/samba/smb.conf <<< "    comment = Data Science on Ubuntu"
-#sudo tee -a /etc/samba/smb.conf <<< "    path = /home"
-#sudo tee -a /etc/samba/smb.conf <<< "    read only = no"
-#sudo systemctl restart smbd
+sudo tee -a /etc/samba/smb.conf <<< "[homes]"
+sudo tee -a /etc/samba/smb.conf <<< "   comment = Home Directories"
+sudo tee -a /etc/samba/smb.conf <<< "   browseable = yes"
+sudo tee -a /etc/samba/smb.conf <<< "   read only = no"
+sudo tee -a /etc/samba/smb.conf <<< "   create mask = 0700"
+sudo tee -a /etc/samba/smb.conf <<< "   directory mask = 0700"
+sudo tee -a /etc/samba/smb.conf <<< "   valid users = %S"
 
-# Setting up User Accounts and Connecting to Share
-# Since Samba doesn't use the system account password, we need to set up a Samba password for our user account:
-#sudo smbpasswd -a $USER
-# Note" Username used must belong to a system account, else it won't save.
+# For Samba GUI to work
+sudo touch /etc/libuser.conf
+
+# Samba GUI
+# sudo apt-fast -y install system-config-samba
+# To run need to type:
+#sudo system-config-samba
+
+# Restart Samba Server
+sudo systemctl restart smbd
+sudo systemctl status smbd
 
 # Libre Office: free and open source office suite.
 # www.libreoffice.org
-sudo apt-get -y install libreoffice
+sudo apt-fast -y install libreoffice
 
 # OBS Studio for Open Broadcaster Software
 # Free and open-source streaming and recording program.
 # www.obsproject.com
-sudo apt-get -y install ffmpeg
+sudo apt-fast -y install ffmpeg
 sudo add-apt-repository ppa:obsproject/obs-studio
-sudo apt-get update
-sudo apt-get -y install obs-studio
+sudo apt-fast update
+sudo apt-fast -y install obs-studio
 
 # GIMP graphics editor used for image retouching and editing.
 # www.gimp.org
-sudo apt-get -y install gimp
+sudo apt-fast -y install gimp
 
 # VLC Media player is a free and open-source, portable, cross-platform media player and streaming media server.
 # www.videolan.org/vlc/
-sudo apt-get -y install vlc
+sudo apt-fast -y install vlc
 
 # FileZilla
 # Cross-platform FTP application, consisting of FileZilla Client and FileZilla Server.
 # Client binaries are available for Windows, Linux, and macOS.
 # www.filezilla-project.org
-sudo apt-get -y install filezilla
+sudo apt-fast -y install filezilla
 
 # Spotify
 # Music streaming service.
 # www.spotify.com
-sudo apt-get -y install snapd
+sudo apt-fast -y install snapd
 sudo snap install spotify
 
 # ﻿SageMath
@@ -122,7 +148,7 @@ sudo snap install spotify
 # combinatorics, graph theory, numerical analysis, number theory, calculus and statistics.
 # Documentation: http://www.sagemath.org/library.html
 # www.sagemath.org/
-sudo apt-get -y install sagemath
+sudo apt-fast -y install sagemath
 
 # Maxima
 # Maxima is a computer algebra system (CAS) based on a 1982 version of Macsyma.
@@ -130,38 +156,38 @@ sudo apt-get -y install sagemath
 # as well as under Microsoft Windows and Android.
 # Documentation: http://maxima.sourceforge.net/documentation.html
 # http://maxima.sourceforge.net
-sudo apt-get -y install wxmaxima
+sudo apt-fast -y install wxmaxima
 
 # Geogebra
 # GeoGebra is an interactive geometry, algebra, statistics and calculus application,
 # intended for learning and teaching mathematics and science from primary school to university level.
 # Resources: https://www.geogebra.org/materials
 # https://www.geogebra.org
-sudo apt-get -y install geogebra-gnome
+sudo apt-fast -y install geogebra-gnome
 
 
 # Emacs for large files editing.
 # Family of text editors that are characterized by their extensibility.
 # www.gnu.org/software/emacs/
-sudo apt-get -y install emacs
+sudo apt-fast -y install emacs
 
 # Geany
 # Lightweight GUI text editor.
 # www.geany.org
-sudo apt-get -y install geany
+sudo apt-fast -y install geany
 
 # LaTeX
 # ﻿De facto standard for the communication and publication of scientific documents.
 # www.latex-project.org
-sudo apt-get -y install texlive-full
-sudo apt-get -y install texmaker
+sudo apt-fast -y install texlive-full
+sudo apt-fast -y install texmaker
 
 # Ruby
 # Ruby is a dynamic, open source programming language with a focus on simplicity and productivity.
 # It has an elegant syntax that is natural to read and easy to write.
 # Documentation: https://www.ruby-lang.org/en/documentation/
 # https://www.ruby-lang.org/en/
-sudo apt-get -y install ruby ruby-dev
+sudo apt-fast -y install ruby ruby-dev
 
 # Ruby Gems
 echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc
@@ -176,8 +202,8 @@ sudo gem update --system
 # Manual: https://flight-manual.atom.io
 # www.atom.io
 sudo add-apt-repository ppa:webupd8team/atom
-sudo apt-get update
-sudo apt-get -y install atom
+sudo apt-fast update
+sudo apt-fast -y install atom
 
 # Hydrogen
 # Hydrogen is an interactive coding environment that supports Python, R, JavaScript
@@ -197,12 +223,13 @@ gem install jekyll bundler
 jekyll --version
 gem list jekyll
 gem update jekyll
+#bundle install
 
 # Docker
 # Docker is a computer program that performs operating-system-level virtualization also known as containerization.
 # The following linux commands will start Docker and ensure that starts after the reboot.
 # https://www.docker.com
-sudo apt-get -y install docker.io
+sudo apt-fast -y install docker.io
 sudo systemctl start docker
 sudo systemctl enable docker
 docker --version
@@ -217,12 +244,12 @@ sudo apt install -y nautilus-dropbox
 # RStudio Desktop 64 bits Version:  1.1.453 Released:  2018-05-16
 # RStudio is a free and open-source integrated development environment for R,
 # a programming language for statistical computing and graphics.
-sudo apt-get -y install r-base
-sudo apt-get -y install libssl-dev libcurl4-openssl-dev libxml2-dev
+sudo apt-fast -y install r-base
+sudo apt-fast -y install libssl-dev libcurl4-openssl-dev libxml2-dev
 wget https://download1.rstudio.org/rstudio-xenial-1.1.453-amd64.deb
 sudo dpkg -i rstudio-xenial-1.1.453-amd64.deb
 rm -f rstudio-xenial-1.1.453-amd64.deb
-sudo apt-get -y -f install
+sudo apt-fast -y -f install
 sudo su - -c "R -e \"install.packages('rmarkdown', repos='https://cran.rstudio.com/')\""
 
 # RStudio Server 64 bits Version:  1.1.456 Released:  2018-07-19
@@ -234,7 +261,7 @@ sudo su - -c "R -e \"install.packages('rmarkdown', repos='https://cran.rstudio.c
 wget https://download2.rstudio.org/rstudio-server-1.1.456-amd64.deb
 sudo dpkg -i rstudio-server-1.1.456-amd64.deb
 rm -f rstudio-server-1.1.456-amd64.deb
-sudo apt-get -y -f install
+sudo apt-fast -y -f install
 
 # Shiny Server
 # Open Source Shiny Server provides a platform on which you can host multiple Shiny applications
@@ -246,7 +273,7 @@ sudo su - -c "R -e \"install.packages('shiny', repos='https://cran.rstudio.com/'
 wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-1.5.7.907-amd64.deb
 sudo dpkg -i shiny-server-1.5.7.907-amd64.deb
 rm -f shiny-server-1.5.7.907-amd64.deb
-sudo apt-get -y -f install
+sudo apt-fast -y -f install
 
 # R Essential Packages
 sudo su - -c "R -e \"install.packages('repr', repos='https://cran.rstudio.com/')\""
@@ -273,14 +300,14 @@ sudo su - -c "R -e \".libPaths()\""
 # Spyder is an open source cross-platform integrated development environment for scientific programming
 # in the Python language. Spyder integrates NumPy, SciPy, Matplotlib and IPython, as well as other open source software.
 # https://pythonhosted.org/spyder/
-sudo apt-get -y install spyder3
+sudo apt-fast -y install spyder3
 
 # MariaDB
 # One of the most popular database servers. Made by the original developers of MySQL. Guaranteed to stay open source.
 # MariaDB is a community-developed fork of the MySQL relational database management system
 # intended to remain free under the GNU GPL.
 # https://mariadb.org
-sudo apt-get -y install mariadb-server mariadb-client
+sudo apt-fast -y install mariadb-server mariadb-client
 sudo mysql_secure_installation
 
 # You will be asked these questions:
@@ -302,7 +329,7 @@ sudo systemctl enable mariadb.service
 # feature robustness, and performance.
 # Documentation: https://www.postgresql.org/docs/
 # https://www.postgresql.org
-sudo apt-get -y install postgresql-10
+sudo apt-fast -y install postgresql-10
 
 # Setup password for PostgreSQL
 sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'psqlpassword';"
@@ -316,13 +343,13 @@ sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'psqlpassword';"
 # the most advanced Open Source database in the world.
 # Documentation: https://www.pgadmin.org/docs/
 # https://www.pgadmin.org
-sudo apt-get -y install pgadmin3
+sudo apt-fast -y install pgadmin3
 
 # DB Browser for SQLite
 # DB Browser for SQLite is a high quality, visual, open source tool to create, design, 
 # and edit database files compatible with SQLite.
 # https://sqlitebrowser.org
-sudo apt-get -y install sqlitebrowser
+sudo apt-fast -y install sqlitebrowser
 
 
 # Apache Web Server
@@ -333,14 +360,14 @@ sudo apt-get -y install sqlitebrowser
 # The configuration system is fully documented in /usr/share/doc/apache2/README.Debian.gz.
 # Open browser and go to http://your_server_name
 # https://httpd.apache.org
-sudo apt-get -y install apache2
-sudo apt-get -y install apache2-doc apache2-utils apache2-suexec-pristine libapache2-mod-fcgid libapache2-mod-python
+sudo apt-fast -y install apache2
+sudo apt-fast -y install apache2-doc apache2-utils apache2-suexec-pristine libapache2-mod-fcgid libapache2-mod-python
 
 # PHP 7.2
 # PHP: Hypertext Preprocessor is a server-side scripting language designed for Web development,
 # but also used as a general-purpose programming language.
 # http://www.php.net
-sudo apt-get -y install php7.2 libapache2-mod-php7.2
+sudo apt-fast -y install php7.2 libapache2-mod-php7.2
 sudo systemctl restart apache2
 
 # Get MySQL / MariaDB support in PHP
@@ -351,27 +378,27 @@ apt-cache search --names-only ^php
 a2enmod php7.2
 
 # Adding PHP support
-sudo apt-get -y install memcached imagemagick libruby
-sudo apt-get -y install php7.2-mysql php7.2-sqlite3 libapache2-mod-php php7.2 php7.2-common php7.2-gd php7.2-imap
-sudo apt-get -y install php7.2-cgi  php-pear mcrypt php7.2-curl php7.2-intl php7.2-pspell php7.2-cli
-sudo apt-get -y install php7.2-recode  php7.2-tidy php7.2-xmlrpc php7.2-xsl php-memcache
-sudo apt-get -y install php-imagick php-gettext php7.2-zip php7.2-mbstring php-soap php7.2-soap
+sudo apt-fast -y install memcached imagemagick libruby
+sudo apt-fast -y install php7.2-mysql php7.2-sqlite3 libapache2-mod-php php7.2 php7.2-common php7.2-gd php7.2-imap
+sudo apt-fast -y install php7.2-cgi  php-pear mcrypt php7.2-curl php7.2-intl php7.2-pspell php7.2-cli
+sudo apt-fast -y install php7.2-recode  php7.2-tidy php7.2-xmlrpc php7.2-xsl php-memcache
+sudo apt-fast -y install php-imagick php-gettext php7.2-zip php7.2-mbstring php-soap php7.2-soap
 
 sudo systemctl restart apache2
 
 # Install the Opcache + APCu PHP cache to speed up PHP
-sudo apt-get -y install php7.2-opcache php-apcu
+sudo apt-fast -y install php7.2-opcache php-apcu
 
 sudo systemctl restart apache2
 
 # Let's encript
-sudo apt-get -y install certbot
+sudo apt-fast -y install certbot
 
 # PureFTPd and Quota
 # Pure-FTPd is a free FTP Server with a strong focus on software security.
 # It can be compiled and run on a variety of Unix-like computer operating systems including Linux, OpenBSD, NetBSD, FreeBSD,...
 # https://www.pureftpd.org
-sudo apt-get -y install pure-ftpd-common pure-ftpd-mysql quota quotatool
+sudo apt-fast -y install pure-ftpd-common pure-ftpd-mysql quota quotatool
 # Edit the file /etc/default/pure-ftpd-common
 #sudo nano /etc/default/pure-ftpd-common
 # and make sure that the start mode is set to standalone and set VIRTUALCHROOT=true:
@@ -401,7 +428,7 @@ sudo service pure-ftpd-mysql restart
 # As a portable web application written primarily in PHP, it has become one of the
 # most popular MySQL administration tools, especially for web hosting services.
 # https://www.phpmyadmin.net
-sudo apt-get -y install phpmyadmin
+sudo apt-fast -y install phpmyadmin
 
 # You will see the following questions:
 
@@ -430,14 +457,14 @@ sudo mysql -u root -D mysql -e "CREATE USER 'admin_myphpadmin'@'localhost' IDENT
 # tools for server configuration, user administration, backup, and much more.
 # MySQL Workbench is available on Windows, Linux and Mac OS X.
 # https://www.mysql.com/products/workbench/
-sudo apt-get -y install mysql-workbench
+sudo apt-fast -y install mysql-workbench
 
 # Git
 # Git is a version control system for tracking changes in computer files and coordinating work
 # on those files among multiple people.
 # Documentation: https://git-scm.com/docs
 # https://git-scm.com
-sudo apt-get -y install git
+sudo apt-fast -y install git
 
 # MongoDB
 # MongoDB is a free and open-source cross-platform document-oriented database program.
@@ -456,7 +483,7 @@ mongo --eval 'db.runCommand({ connectionStatus: 1 })'
 # and to connect to MongoDB.
 # Documentation: https://nodejs.org/en/docs/
 # https://nodejs.org/en/
-sudo apt-get install -y nodejs
+sudo apt-fast install -y nodejs
 
 # Execute this command to verify connection status:
 node -v
@@ -467,18 +494,23 @@ node -v
 # It includes built-in type casting, validation, query building, business logic hooks and more, out of the box.
 # Documentation: http://mongoosejs.com/docs/guide.html
 # http://mongoosejs.com
-sudo apt-get install -y npm
+sudo apt-fast install -y npm
 npm install mongoose
 
 # OpenJDK
 # OpenJDK is a free and open source implementation of the Java Platform, Standard Edition.
 # http://openjdk.java.net
-sudo apt-get install -y openjdk-8-jre
-sudo apt-get install -y openjdk-8-jdk
+sudo apt-fast install -y openjdk-8-jre
+sudo apt-fast install -y openjdk-8-jdk
 
 clear
 echo ""
+echo "***************************** I M P O R T A N T ****************************"
+echo ""
 echo "Please select >> java-8-openjdk << in order for Neo4j to run in your system!"
+echo ""
+echo ""
+echo ""
 echo ""
 
 # To switch versions:
@@ -494,8 +526,8 @@ java -version
 # https://neo4j.com
 sudo wget -O - https://debian.neo4j.org/neotechnology.gpg.key | sudo apt-key add -
 sudo echo 'deb https://debian.neo4j.org/repo stable/' | sudo tee -a /etc/apt/sources.list.d/neo4j.list
-sudo apt-get update
-sudo apt-get install -y neo4j
+sudo apt-fast update
+sudo apt-fast install -y neo4j
 
 sudo systemctl start neo4j
 
@@ -517,7 +549,7 @@ sudo systemctl start neo4j
 # and other operating systems.
 # Documentation: https://www.audacityteam.org/help/documentation/
 # https://www.audacityteam.org
-sudo apt-get install -y  audacity
+sudo apt-fast install -y  audacity
 
 # Blender
 # Blender is the free and open source 3D creation suite.
@@ -525,7 +557,7 @@ sudo apt-get install -y  audacity
 # rendering, compositing and motion tracking, even video editing and game creation.
 # Support, tutorials and documentation: https://www.blender.org/support/
 # https://www.blender.org
-sudo apt-get install -y blender
+sudo apt-fast install -y blender
 
 # Ardour
 # Record, Edit, and Mix on Linux, macOS and Windows.
@@ -579,7 +611,7 @@ rm -f latest.tar.gz
 # It runs on Linux, macOS, FreeBSD and Microsoft Windows.
 # Documentation: http://manual.ardour.org/toc/
 # http://ardour.org
-sudo apt-get install -y ardour
+sudo apt-fast install -y ardour
 
 # Data Science World
 
@@ -621,7 +653,7 @@ sudo su - -c "R -e \"IRkernel::installspec()\""
 # manipulating numerical tables and time series.
 # Documentation: http://pandas.pydata.org/pandas-docs/stable/
 # https://pandas.pydata.org
-sudo apt-get install -y python3-pandas
+sudo apt-fast install -y python3-pandas
 
 # An alternative is to install it using pip, you should use pip3 for Python3 as follows:
 # $ sudo -H pip3 install pandas
@@ -651,7 +683,7 @@ sudo apt-get install -y python3-pandas
 # It provides a high-level interface for drawing attractive and informative statistical graphics.
 # Tutorial: http://seaborn.pydata.org/tutorial.html
 # http://seaborn.pydata.org
-sudo apt-get install -y libatlas-base-dev gfortran
+sudo apt-fast install -y libatlas-base-dev gfortran
 pip3 install Seaborn
 
 # Scikit-learn
@@ -715,7 +747,7 @@ pip3 install nltk
 # Documentation: https://matplotlib.org/contents.html
 # https://matplotlib.org
 # python3 -mpip install -U matplotlib
-sudo apt-get -y install python3-matplotlib
+sudo apt-fast -y install python3-matplotlib
 
 # PyQt5
 # Qt is a set of C++ libraries and development tools that includes platform independent abstractions
@@ -724,7 +756,7 @@ sudo apt-get -y install python3-matplotlib
 # (NFC and Bluetooth) and access to the cloud. PyQt5 implements over 1000 of these classes as a set
 # of Python modules.
 # http://pyqt.sourceforge.net/Docs/PyQt5/
-sudo apt-get -y install python3-pyqt5
+sudo apt-fast -y install python3-pyqt5
 
 # Plotly for Python
 # Plotly creates leading open source tools for composing, editing, and sharing interactive
@@ -734,15 +766,40 @@ sudo apt-get -y install python3-pyqt5
 pip3 install plotly
 pip3 install plotly --upgrade
 
+# Webmin
+# Webmin is a web-based interface for system administration for Unix. 
+# Using any modern web browser, you can setup user accounts, Apache, DNS, 
+# file sharing and much more. Webmin removes the need to manually edit Unix 
+# configuration files like /etc/passwd, and lets you manage a system from 
+# the console or remotely
+# http://www.webmin.com/
+wget -qO- http://www.webmin.com/jcameron-key.asc | sudo apt-key add
+sudo add-apt-repository "deb http://download.webmin.com/download/repository sarge contrib"
+sudo apt update
+sudo apt-fast -y install webmin
+
+# Webmin install complete. 
+# Open browser to:      https://localhost:10000/
+# User name: your_user_name
+# Password: your_password
+
+# Preload
+# Preload monitors applications that users run, and by analyzing this
+# data, predicts what applications users might run, and fetches those
+# binaries and their dependencies into memory for faster startup times.
+# sudo apt-fast install preload
+sudo apt-fast -y install preload
+
 # ufw Firewall
 # Uncomplicated Firewall is a program for managing a netfilter firewall designed to be easy to use.
 # It uses a command-line interface consisting of a small number of simple commands, and uses iptables for configuration.
 # https://linuxize.com/post/how-to-setup-a-firewall-with-ufw-on-ubuntu-18-04/
-sudo apt-get -y install ufw
+sudo apt-fast -y install ufw
 sudo ufw enable
 
 # Open ports
 sudo ufw allow ssh
+sudo ufw allow samba
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp # Https
 sudo ufw allow 4000/tcp # Jekyll
@@ -752,10 +809,14 @@ sudo ufw allow 8787/tcp # R Studio Server
 sudo ufw allow 3838/tcp # Shiny
 sudo ufw allow 7474/tcp # Neo4j
 sudo ufw allow 8888/tcp # Jupyter Notebooks
+sudo ufw allow from any to any port 10000 proto tcp # Webmin
 
-
+# Final Clean up
+sudo apt-fast clean
+sudo apt-fast autoremove
 
 # Final Message
+clear
 echo ""
 echo ""
 echo ""
