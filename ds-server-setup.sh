@@ -36,7 +36,7 @@ sudo apt-fast -y install ntp
 # Lubuntu is a fast and lightweight operating system with a clean and easy-to-use user interface.
 # It is a Linux system, that uses the minimal desktop LXDE, and a selection of light applications.
 # Because of this, Lubuntu has very low hardware requirements.
-# https://lubuntu.net/
+# https://lubuntu.me/
 sudo apt-fast -y install lubuntu-desktop
 
 # Build Essentials
@@ -46,7 +46,14 @@ sudo apt-fast -y install build-essential checkinstall
 # Chromium
 # Chromium is the open source project behind Google Chrome.
 # https://www.chromium.org/
-sudo apt-fast install -y chromium-browser
+sudo apt-fast -y install chromium-browser
+
+# Flash Player
+# Adobe® Flash® Player is a lightweight browser plug-in and rich Internet application runtime that delivers consistent 
+# and engaging user experiences, stunning audio/video playback, and exciting gameplay.
+# https://get.adobe.com/flashplayer/
+sudo apt-fast -y install flashplugin-installer
+
 
 # Clamav
 # ClamAV® is an open source antivirus engine for detecting trojans, viruses, malware & other malicious threats.
@@ -83,7 +90,7 @@ sudo apt-fast -y install tmux
 sudo apt-fast -y install tasksel
 sudo tasksel install samba-server
 
-# Fresh clean configuration file
+# Make a fresh clean configuration file
 sudo cp /etc/samba/smb.conf /etc/samba/smb.conf_backup
 sudo bash -c 'grep -v -E "^#|^;" /etc/samba/smb.conf_backup | grep . > /etc/samba/smb.conf'
 
@@ -111,8 +118,10 @@ sudo touch /etc/libuser.conf
 sudo systemctl restart smbd
 sudo systemctl status smbd
 
-# Libre Office: free and open source office suite.
-# www.libreoffice.org
+# Libre Office
+# LibreOffice is a powerful office suite – its clean interface and feature-rich tools help you unleash your creativity and enhance your productivity. 
+# LibreOffice includes several applications that make it the most powerful Free and Open Source office suite on the market.
+# https://www.libreoffice.org/
 sudo apt-fast -y install libreoffice
 
 # OBS Studio for Open Broadcaster Software
@@ -559,10 +568,6 @@ sudo apt-fast install -y  audacity
 # https://www.blender.org
 sudo apt-fast install -y blender
 
-# Ardour
-# Record, Edit, and Mix on Linux, macOS and Windows.
-# http://ardour.org
-
 # Joomla
 # Joomla! is a free and open-source content management system for publishing web content,
 # developed by Open Source Matters, Inc. It is built on a model–view–controller web application
@@ -787,8 +792,14 @@ sudo apt-fast -y install webmin
 # Preload monitors applications that users run, and by analyzing this
 # data, predicts what applications users might run, and fetches those
 # binaries and their dependencies into memory for faster startup times.
-# sudo apt-fast install preload
 sudo apt-fast -y install preload
+
+# Slack
+# Slack is a place where your team comes together to collaborate, 
+# important information can be found by the right people, and your 
+# tools pipe in information when and where you need it.
+# https://slack.com/
+sudo snap install slack --classic
 
 # ufw Firewall
 # Uncomplicated Firewall is a program for managing a netfilter firewall designed to be easy to use.
@@ -819,9 +830,15 @@ sudo apt-fast autoremove
 clear
 echo ""
 echo ""
-echo ""
-echo "CONGRATULATIONS, now you have an awesome system!"
-echo ""
-echo "Time to Collaborate!"
+echo "        C O N G R A T U L A T I O N S !"
+echo "        now you have an awesome system!"
 echo ""
 echo ""
+echo "    Duubar Villalobos   mydvtech@gmail.com"
+echo ""
+echo ""
+echo "        Time to inspire & collaborate!"
+echo ""
+echo ""
+echo ""
+
