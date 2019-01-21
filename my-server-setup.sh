@@ -42,8 +42,6 @@ echo "                                           "
 # To clear all the known hosts:
 # > term_.command.removeAllKnownHosts();
 
-sudo su
-clear
 
 # apt-fast
 # Use apt-fast instead of apt-get for a speedy update
