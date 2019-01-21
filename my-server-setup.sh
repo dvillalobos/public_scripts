@@ -44,7 +44,6 @@ echo "                                           "
 
 sudo su
 clear
-exit
 
 # apt-fast
 # Use apt-fast instead of apt-get for a speedy update
