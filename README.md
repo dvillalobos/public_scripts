@@ -20,9 +20,9 @@ $ ./my-server-setup.sh
 
 
 # In case of ssh failure
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED! @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
 
  Just remove the key for the host name
